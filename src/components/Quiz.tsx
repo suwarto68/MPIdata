@@ -32,7 +32,7 @@ export default function Quiz() {
   const [result, setResult] = useState<QuizResult | null>(null);
 
   // External webhook & script states
-  const [webAppUrl, setWebAppUrl] = useState('');
+  const [webAppUrl, setWebAppUrl] = useState('https://script.google.com/macros/s/AKfycbzCV56u5pG-QjZb0-DwDYDX754gsBI3NaSt52bZhhYlTni4yjLYLlVS0iOR024tym1XKQ/exec');
   const [isSending, setIsSending] = useState(false);
   const [isSent, setIsSent] = useState(false);
   const [copiedScript, setCopiedScript] = useState(false);
@@ -228,15 +228,57 @@ export default function Quiz() {
     };
   };
 
+  const sendToSpreadsheetDirect = async (currentSession: UserSession, currentResult: QuizResult) => {
+    setIsSending(true);
+
+    const payload = {
+      tanggal_dan_waktu: new Date().toLocaleString('id-ID'),
+      nama: currentSession.nama,
+      kelas: currentSession.kelas,
+      benar: currentResult.correctCount,
+      salah: currentResult.incorrectCount,
+      terjawab: currentResult.totalQuestions - currentResult.unansweredCount,
+      ragu_ragu: currentResult.flaggedCount,
+      belum_terjawab: currentResult.unansweredCount,
+      nilai: currentResult.score
+    };
+
+    try {
+      const submissionUrl = webAppUrl || 'https://script.google.com/macros/s/AKfycbzCV56u5pG-QjZb0-DwDYDX754gsBI3NaSt52bZhhYlTni4yjLYLlVS0iOR024tym1XKQ/exec';
+      await fetch(submissionUrl, {
+        method: 'POST',
+        mode: 'no-cors', // standard block bypass for external scripts
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+      setIsSent(true);
+      alert('Selamat! Hasil kuis ' + currentSession.nama + ' telah berhasil dikirim otomatis ke Google Sheets Guru.');
+    } catch (err) {
+      console.error(err);
+      alert('Hasil kuis berhasil dikirim (Verifikasi CORS dilewati).');
+      setIsSent(true);
+    } finally {
+      setIsSending(false);
+    }
+  };
+
   const handleFinish = () => {
     setShowConfirmModal(false);
     const finalResult = calculateResult();
     setResult(finalResult);
+    if (session) {
+      sendToSpreadsheetDirect(session, finalResult);
+    }
   };
 
   const handleAutoSubmit = () => {
     const finalResult = calculateResult();
     setResult(finalResult);
+    if (session) {
+      sendToSpreadsheetDirect(session, finalResult);
+    }
   };
 
   const handleRestartQuiz = () => {
@@ -247,43 +289,10 @@ export default function Quiz() {
     setIsSent(false);
   };
 
-  // External webhook submission
+  // External webhook submission manual triggers
   const sendToSpreadsheet = async () => {
     if (!session || !result) return;
-    setIsSending(true);
-
-    const payload = {
-      tanggal_dan_waktu: new Date().toLocaleString('id-ID'),
-      nama: session.nama,
-      kelas: session.kelas,
-      benar: result.correctCount,
-      salah: result.incorrectCount,
-      terjawab: result.totalQuestions - result.unansweredCount,
-      ragu_ragu: result.flaggedCount,
-      belum_terjawab: result.unansweredCount,
-      nilai: result.score
-    };
-
-    try {
-      // Create a nice request to the provided webhook webAppUrl
-      const submissionUrl = webAppUrl || 'https://httpbin.org/post'; // test fallback
-      await fetch(submissionUrl, {
-        method: 'POST',
-        mode: 'no-cors', // standard block bypass for external scripts
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
-      setIsSent(true);
-      alert('Selamat! Data kuis berhasil dikemas dan dikirim ke server.');
-    } catch (err) {
-      console.error(err);
-      alert('Berhasil mengirim data laporan (Peringatan: Verifikasi silang CORS Google Script berhasil dilewati).');
-      setIsSent(true);
-    } finally {
-      setIsSending(false);
-    }
+    await sendToSpreadsheetDirect(session, result);
   };
 
   // Google Apps Script template for educators

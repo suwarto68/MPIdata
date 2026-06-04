@@ -156,20 +156,93 @@ export default function Eksplorasi() {
   const totalValue = rows.reduce((sum, r) => sum + r.value, 0);
   const maxValue = Math.max(...rows.map(r => r.value), 1);
 
-  // Elegant colors list for charts
-  const colors = [
-    '#3b82f6', // blue-500
-    '#10b981', // emerald-500
-    '#f59e0b', // amber-500
-    '#8b5cf6', // violet-500
-    '#ec4899', // pink-500
-    '#ef4444', // red-500
-    '#14b8a6', // teal-500
-    '#6366f1', // indigo-500
+  // Elegant color palettes with gradients and tailwind utility configurations
+  const COLOR_PALETTES = [
+    {
+      from: '#3b82f6', // blue-500
+      to: '#1d4ed8',   // blue-700
+      bgClass: 'from-blue-500 to-indigo-600',
+      borderClass: 'border-blue-100',
+      badgeClass: 'bg-blue-50 text-blue-700 border-blue-100',
+      ringClass: 'ring-blue-100',
+      glowClass: 'shadow-blue-500/20',
+      pillColor: '#3b82f6'
+    },
+    {
+      from: '#10b981', // emerald-500
+      to: '#047857',   // emerald-700
+      bgClass: 'from-emerald-400 to-teal-600',
+      borderClass: 'border-emerald-100',
+      badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-100',
+      ringClass: 'ring-emerald-100',
+      glowClass: 'shadow-emerald-500/20',
+      pillColor: '#10b981'
+    },
+    {
+      from: '#f59e0b', // amber-500
+      to: '#b45309',   // amber-700
+      bgClass: 'from-amber-400 to-orange-500',
+      borderClass: 'border-amber-100',
+      badgeClass: 'bg-amber-50 text-amber-700 border-amber-100',
+      ringClass: 'ring-amber-100',
+      glowClass: 'shadow-amber-500/20',
+      pillColor: '#f59e0b'
+    },
+    {
+      from: '#8b5cf6', // violet-500
+      to: '#6d28d9',   // violet-700
+      bgClass: 'from-violet-500 to-purple-700',
+      borderClass: 'border-violet-100',
+      badgeClass: 'bg-violet-50 text-violet-700 border-violet-100',
+      ringClass: 'ring-violet-100',
+      glowClass: 'shadow-violet-500/20',
+      pillColor: '#8b5cf6'
+    },
+    {
+      from: '#ec4899', // pink-500
+      to: '#be185d',   // pink-700
+      bgClass: 'from-pink-400 to-rose-600',
+      borderClass: 'border-pink-100',
+      badgeClass: 'bg-pink-50 text-pink-700 border-pink-100',
+      ringClass: 'ring-pink-100',
+      glowClass: 'shadow-pink-500/20',
+      pillColor: '#ec4899'
+    },
+    {
+      from: '#ef4444', // red-500
+      to: '#b91c1c',   // red-750
+      bgClass: 'from-rose-500 to-red-600',
+      borderClass: 'border-rose-100',
+      badgeClass: 'bg-rose-50 text-rose-700 border-rose-100',
+      ringClass: 'ring-rose-100',
+      glowClass: 'shadow-rose-500/20',
+      pillColor: '#ef4444'
+    },
+    {
+      from: '#14b8a6', // teal-500
+      to: '#0f766e',   // teal-700
+      bgClass: 'from-teal-400 to-cyan-600',
+      borderClass: 'border-teal-100',
+      badgeClass: 'bg-teal-50 text-teal-700 border-teal-100',
+      ringClass: 'ring-teal-100',
+      glowClass: 'shadow-teal-500/20',
+      pillColor: '#14b8a6'
+    },
+    {
+      from: '#6366f1', // indigo-500
+      to: '#4338ca',   // indigo-700
+      bgClass: 'from-indigo-400 to-blue-700',
+      borderClass: 'border-indigo-100',
+      badgeClass: 'bg-indigo-50 text-indigo-700 border-indigo-100',
+      ringClass: 'ring-indigo-100',
+      glowClass: 'shadow-indigo-500/20',
+      pillColor: '#6366f1'
+    }
   ];
 
-  // Draw Pie angle state helper
-  let accumulatedAngle = 0;
+  // Dynamic interactive hover states
+  const [hoveredRowId, setHoveredRowId] = useState<number | null>(null);
+  const hoveredRow = rows.find(r => r.id === hoveredRowId);
 
   return (
     <div className="max-w-6xl mx-auto space-y-6" id="eksplorasi-section-root">
@@ -195,7 +268,7 @@ export default function Eksplorasi() {
             <span>Pilih Studi Kasus dari Buku Materi (Otomatis Muat!)</span>
           </div>
           {isModified && (
-            <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-bold font-mono uppercase">
+            <span className="text-[10px] bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full font-bold font-mono uppercase animate-pulse">
               ⚠️ Modifikasi Manual Aktif
             </span>
           )}
@@ -210,8 +283,8 @@ export default function Eksplorasi() {
                 onClick={() => handleSelectPreset(preset)}
                 className={`text-left p-4 rounded-xl border transition-all duration-300 w-full cursor-pointer relative flex flex-col justify-between h-full ${
                   isActive
-                    ? 'border-indigo-600 ring-2 ring-indigo-50 bg-gradient-to-br from-indigo-50/50 to-white shadow-md'
-                    : 'border-slate-100 hover:border-slate-200 bg-slate-50/40 hover:bg-slate-50'
+                    ? 'border-indigo-600 ring-2 ring-indigo-50 bg-gradient-to-br from-indigo-50/50 to-white shadow-md scale-102'
+                    : 'border-slate-100 hover:border-slate-300 bg-slate-50/40 hover:bg-white hover:shadow-sm'
                 }`}
                 id={`preset-card-${preset.id}`}
               >
@@ -227,7 +300,7 @@ export default function Eksplorasi() {
                   <h4 className="text-xs sm:text-sm font-bold text-slate-800 leading-tight">
                     {preset.title}
                   </h4>
-                  <p className="text-[11px] text-slate-500 mt-1 line-clamp-2">
+                  <p className="text-[11px] text-slate-500 mt-1 line-clamp-2 leading-relaxed">
                     {preset.description}
                   </p>
                 </div>
@@ -237,7 +310,7 @@ export default function Eksplorasi() {
                   }`}>
                     {preset.dataType === 'Kategorik Nominal' ? 'Kategorik' : 'Numerik'}
                   </span>
-                  <span className="text-slate-400 font-medium">Auto-render: {preset.recommendedChart === 'pie' ? 'Lingkaran' : 'Batang'}</span>
+                  <span className="text-slate-400 font-medium">Auto: {preset.recommendedChart === 'pie' ? 'Lingkaran' : 'Batang'}</span>
                 </div>
               </button>
             );
@@ -274,17 +347,17 @@ export default function Eksplorasi() {
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
             <span>Rekomendasi Diagram Guru (Bapak Suwarto, S.Pd):</span>
           </span>
-          <p className="text-[11px] text-slate-600 leading-relaxed font-normal">
+          <p className="text-[11px] text-slate-600 leading-relaxed font-normal text-slate-700">
             {currentPreset.reason}
           </p>
         </div>
 
         {/* Misi Tantangan Belajar */}
-        <div className="p-3 bg-indigo-50/40 border border-indigo-100 rounded-xl text-xs text-indigo-850 flex items-start space-x-2">
-          <Sparkles className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+        <div className="p-3 bg-indigo-50/40 border border-indigo-150 rounded-xl text-xs text-indigo-850 flex items-start space-x-2">
+          <Sparkles className="w-4 h-4 text-amber-500 shrink-0 mt-0.5 animate-pulse" />
           <div>
-            <span className="font-extrabold text-indigo-900 block uppercase tracking-wider text-[10px]">Tantangan Belajar Mandiri:</span>
-            <p className="text-[11px] text-indigo-805 mt-0.5 font-normal leading-relaxed">
+            <span className="font-extrabold text-indigo-950 block uppercase tracking-wider text-[10px]">Tantangan Belajar Mandiri:</span>
+            <p className="text-[11px] text-indigo-900 mt-0.5 font-normal leading-relaxed">
               {currentPreset.challenge}
             </p>
           </div>
@@ -327,7 +400,7 @@ export default function Eksplorasi() {
               />
             </div>
             <div className="col-span-4">
-              <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Frekuensi / Nilai</label>
+              <label className="block text-[10px] font-bold text-slate-400 uppercase mb-1">Frekuensi</label>
               <input
                 type="number"
                 value={newValue}
@@ -343,7 +416,7 @@ export default function Eksplorasi() {
             <div className="col-span-2 flex items-end">
               <button
                 type="submit"
-                className="w-full bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 flex items-center justify-center transition-all shadow-sm shadow-indigo-100 font-bold text-xs cursor-pointer"
+                className="w-full bg-indigo-600 text-white py-2.5 rounded-lg hover:bg-indigo-700 flex items-center justify-center transition-all shadow-sm shadow-indigo-100 font-bold text-xs cursor-pointer h-9 md:h-10"
                 title="Tambahkan Data ke Tabel"
                 id="btn-add-data-row"
               >
@@ -355,7 +428,7 @@ export default function Eksplorasi() {
           {/* Data List Rows Table */}
           <div className="max-h-[220px] overflow-y-auto border border-slate-100 rounded-xl" id="data-list-rows-table-wrapper">
             <table className="w-full text-xs text-left">
-              <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider text-[10px] font-semibold">
+              <thead className="bg-slate-50 text-slate-500 uppercase tracking-wider text-[10px] font-semibold sticky top-0 z-10 box-shadow">
                 <tr>
                   <th className="py-2.5 px-3">No</th>
                   <th className="py-2.5 px-3">Kategori</th>
@@ -367,22 +440,39 @@ export default function Eksplorasi() {
               <tbody className="divide-y divide-slate-100 text-slate-600">
                 {rows.map((row, index) => {
                   const percentage = totalValue > 0 ? ((row.value / totalValue) * 100).toFixed(1) : '0.0';
+                  const palette = COLOR_PALETTES[index % COLOR_PALETTES.length];
+                  const isHovered = hoveredRowId === row.id;
+                  const isOtherHovered = hoveredRowId !== null && hoveredRowId !== row.id;
+
                   return (
-                    <tr key={row.id} className="hover:bg-slate-50/80 transition-colors" id={`row-item-${row.id}`}>
+                    <tr
+                      key={row.id}
+                      className={`transition-all duration-200 cursor-pointer ${
+                        isHovered ? 'bg-indigo-50/60 font-semibold' : 'hover:bg-slate-50/80'
+                      } ${isOtherHovered ? 'opacity-40' : 'opacity-100'}`}
+                      onMouseEnter={() => setHoveredRowId(row.id)}
+                      onMouseLeave={() => setHoveredRowId(null)}
+                      id={`row-item-${row.id}`}
+                    >
                       <td className="py-3 px-3 font-mono text-slate-400">{index + 1}</td>
-                      <td className="py-3 px-3 font-semibold text-slate-800 max-w-[100px] truncate">{row.label}</td>
-                      <td className="py-3 px-3 text-right">
+                      <td className="py-3 px-3 font-semibold text-slate-800 max-w-[100px] truncate">
+                        <div className="flex items-center space-x-2">
+                          <span className="w-2.5 h-2.5 rounded-full shrink-0 shadow-sm border border-white" style={{ backgroundColor: palette.from }}></span>
+                          <span className="truncate" title={row.label}>{row.label}</span>
+                        </div>
+                      </td>
+                      <td className="py-3 px-3 text-right" onClick={(e) => e.stopPropagation()}>
                         <input
                           type="number"
                           value={row.value}
                           onChange={(e) => handleEditRowValue(row.id, Number(e.target.value))}
-                          className="w-16 text-right px-1.5 py-1 text-xs border border-slate-100 rounded font-mono font-bold text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 bg-slate-50"
+                          className="w-16 text-right px-1.5 py-1 text-xs border border-slate-200 rounded font-mono font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-150 bg-slate-50"
                           min={1}
                           id={`editable-row-value-${row.id}`}
                         />
                       </td>
                       <td className="py-3 px-3 text-center text-slate-500 font-mono text-[11px]">{percentage}%</td>
-                      <td className="py-3 px-3 text-center">
+                      <td className="py-3 px-3 text-center" onClick={(e) => e.stopPropagation()}>
                         <button
                           type="button"
                           onClick={() => handleDeleteRow(row.id)}
@@ -450,101 +540,186 @@ export default function Eksplorasi() {
           </div>
 
           {/* SCREEN FOR DRAW CARDS */}
-          <div className="min-h-[280px] flex items-center justify-center p-4 bg-slate-50/20 border border-dashed border-slate-100 rounded-xl" id="chart-mount-canvas">
+          <div className="min-h-[300px] flex items-center justify-center p-4 bg-slate-50/20 border border-dashed border-slate-150 rounded-2xl relative" id="chart-mount-canvas">
             {chartType === 'bar' ? (
               /* --- RENDER BAR CHART --- */
               <div className="w-full flex flex-col justify-end" id="rendered-bar-chart-view">
-                <div className="text-center text-[11px] font-bold text-slate-600 uppercase tracking-widest mb-3 font-mono">
+                <div className="text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-4 font-mono">
                   📊 DIAGRAM BATANG: {currentPreset.title}
                 </div>
-                <div className="h-44 flex items-end justify-between border-b border-l border-slate-200 pb-2 pl-2 relative" id="bar-chart-stage">
-                  {/* Grid Lines Indicator */}
-                  <div className="absolute left-0 right-0 top-[25%] border-t border-slate-100/70 border-dashed pointer-events-none"></div>
-                  <div className="absolute left-0 right-0 top-[50%] border-t border-slate-100/70 border-dashed pointer-events-none"></div>
-                  <div className="absolute left-0 right-0 top-[75%] border-t border-slate-100/70 border-dashed pointer-events-none"></div>
 
-                  {rows.map((row, idx) => {
-                    const barHeightPercent = (row.value / maxValue) * 85; // cap at 85% to fit label text
-                    const color = colors[idx % colors.length];
-                    return (
-                      <div key={row.id} className="flex flex-col items-center flex-1 group mx-1 sm:mx-1.5" id={`bar-visual-stack-${row.id}`}>
-                        {/* Tooltip on top */}
-                        <span className="text-[10px] font-mono font-black px-2 py-0.5 bg-slate-800 text-white rounded mb-1 transition-all group-hover:scale-110 select-none text-center">
-                          {row.value}
-                        </span>
-                        {/* Interactive Bar */}
+                <div className="flex w-full items-stretch" id="bar-chart-container-stage">
+                  {/* Y-Axis tick labels */}
+                  <div className="flex flex-col justify-between text-right text-[10px] font-mono font-bold text-slate-400 pr-2.5 select-none h-44 pb-6 pt-1">
+                    <span>{Math.round(maxValue)}</span>
+                    <span>{Math.round(maxValue * 0.75)}</span>
+                    <span>{Math.round(maxValue * 0.5)}</span>
+                    <span>{Math.round(maxValue * 0.25)}</span>
+                    <span>0</span>
+                  </div>
+
+                  {/* Chart Stage */}
+                  <div className="flex-1 h-44 flex items-end justify-between border-b border-l border-slate-300 pb-2 pl-2 relative" id="bar-chart-stage">
+                    {/* Horizontal Grid Lines */}
+                    <div className="absolute left-0 right-0 top-0 border-t border-slate-100/80 border-dashed pointer-events-none"></div>
+                    <div className="absolute left-0 right-0 top-[25%] border-t border-slate-100/80 border-dashed pointer-events-none"></div>
+                    <div className="absolute left-0 right-0 top-[50%] border-t border-slate-100/80 border-dashed pointer-events-none"></div>
+                    <div className="absolute left-0 right-0 top-[75%] border-t border-slate-100/80 pointer-events-none border-dashed"></div>
+
+                    {rows.map((row, idx) => {
+                      const barHeightPercent = (row.value / maxValue) * 85; // fit label space on top
+                      const palette = COLOR_PALETTES[idx % COLOR_PALETTES.length];
+                      const isHovered = hoveredRowId === row.id;
+                      const hasActiveHover = hoveredRowId !== null;
+                      const isOtherHovered = hasActiveHover && !isHovered;
+
+                      return (
                         <div
-                          className="w-full rounded-t-lg transition-all duration-500 ease-out hover:brightness-105 shadow-sm border-l border-white/5 active:scale-95 cursor-pointer"
-                          style={{
-                            height: `${Math.max(barHeightPercent, 5)}%`,
-                            backgroundColor: color,
-                          }}
-                        ></div>
-                        {/* Bottom Label */}
-                        <span className="text-[10px] font-bold text-slate-600 mt-2 truncate w-full text-center" title={row.label}>
-                          {row.label}
-                        </span>
-                      </div>
-                    );
-                  })}
+                          key={row.id}
+                          className={`flex flex-col items-center flex-1 mx-1.5 sm:mx-2.5 relative transition-all duration-300 ${
+                            isOtherHovered ? 'opacity-35 scale-95 blur-[0.4px]' : 'opacity-100 scale-100'
+                          }`}
+                          onMouseEnter={() => setHoveredRowId(row.id)}
+                          onMouseLeave={() => setHoveredRowId(null)}
+                          id={`bar-visual-stack-${row.id}`}
+                        >
+                          {/* Value Floating Badge */}
+                          <div className={`absolute -top-7 px-2 py-0.5 rounded text-[10px] font-extrabold font-mono transition-all duration-200 shadow-sm leading-tight select-none ${
+                            isHovered
+                              ? 'bg-slate-900 text-white scale-110 z-10'
+                              : 'bg-white text-slate-600 border border-slate-150'
+                          }`}>
+                            {row.value}
+                          </div>
+
+                          {/* Interactive Gradient Bar */}
+                          <div
+                            className={`w-full rounded-t-lg bg-gradient-to-t transition-all duration-300 cursor-pointer ${
+                              palette.bgClass
+                            } ${isHovered ? 'shadow-lg ' + palette.glowClass + ' brightness-110 -translate-y-0.5' : 'shadow-sm'}`}
+                            style={{
+                              height: `${Math.max(barHeightPercent, 5)}%`,
+                            }}
+                          ></div>
+
+                          {/* Label bottom */}
+                          <span className={`text-[10px] font-bold mt-2 truncate w-full text-center transition-colors duration-200 ${
+                            isHovered ? 'text-indigo-600 font-extrabold' : 'text-slate-500'
+                          }`} title={row.label}>
+                            {row.label}
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             ) : (
               /* --- RENDER PIE CHART --- */
-              <div className="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-8 w-full" id="rendered-pie-chart-view">
-                {/* SVG CIRCLE PIE */}
-                <div className="relative w-44 h-44 flex items-center justify-center shrink-0" id="pie-chart-stage-svg">
+              <div className="flex flex-col md:flex-row items-center justify-center space-y-5 md:space-y-0 md:space-x-8 w-full animate-fadeIn" id="rendered-pie-chart-view">
+                {/* SVG CIRCLE ROTATED DONUT */}
+                <div className="relative w-48 h-48 flex items-center justify-center shrink-0" id="pie-chart-stage-svg">
                   <svg viewBox="0 0 32 32" className="w-full h-full transform -rotate-90">
-                    {rows.map((row, idx) => {
-                      const percentage = totalValue > 0 ? row.value / totalValue : 0;
-                      const strokeDasharray = `${percentage * 100} ${100 - percentage * 100}`;
-                      const strokeDashoffset = 100 - accumulatedAngle;
-                      accumulatedAngle += percentage * 100;
-                      const color = colors[idx % colors.length];
+                    <defs>
+                      {rows.map((row, idx) => {
+                        const palette = COLOR_PALETTES[idx % COLOR_PALETTES.length];
+                        return (
+                          <linearGradient key={`grad-${row.id}`} id={`svg-grad-${row.id}`} x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stopColor={palette.from} />
+                            <stop offset="100%" stopColor={palette.to} />
+                          </linearGradient>
+                        );
+                      })}
+                    </defs>
+                    {(() => {
+                      let currentAccumulated = 0;
+                      return rows.map((row, idx) => {
+                        const percentage = totalValue > 0 ? row.value / totalValue : 0;
+                        const strokeDasharray = `${percentage * 100} ${100 - percentage * 100}`;
+                        const strokeDashoffset = 100 - currentAccumulated;
+                        currentAccumulated += percentage * 100;
+                        const isHovered = hoveredRowId === row.id;
+                        const hasActiveHover = hoveredRowId !== null;
+                        const isOtherHovered = hasActiveHover && !isHovered;
 
-                      return (
-                        <circle
-                          key={row.id}
-                          cx="16"
-                          cy="16"
-                          r="15.915"
-                          fill="transparent"
-                          stroke={color}
-                          strokeWidth="4.2" // thicker elegant look
-                          strokeDasharray={strokeDasharray}
-                          strokeDashoffset={strokeDashoffset}
-                          className="transition-all duration-500 hover:stroke-[4.8] transform origin-center cursor-pointer"
-                          id={`pie-circle-slice-${row.id}`}
-                          title={`${row.label}: ${row.value}`}
-                        />
-                      );
-                    })}
+                        return (
+                          <circle
+                            key={row.id}
+                            cx="16"
+                            cy="16"
+                            r="15.915"
+                            fill="transparent"
+                            stroke={`url(#svg-grad-${row.id})`}
+                            strokeWidth={isHovered ? "5.4" : "4.2"}
+                            strokeDasharray={strokeDasharray}
+                            strokeDashoffset={strokeDashoffset}
+                            className="transition-all duration-300 transform origin-center cursor-pointer"
+                            onMouseEnter={() => setHoveredRowId(row.id)}
+                            onMouseLeave={() => setHoveredRowId(null)}
+                            style={{
+                              opacity: isOtherHovered ? 0.4 : 1,
+                              transform: isHovered ? 'scale(1.03)' : 'scale(1)',
+                            }}
+                            id={`pie-circle-slice-${row.id}`}
+                          />
+                        );
+                      });
+                    })()}
                   </svg>
-                  {/* Central Text Hole for Donut Look */}
-                  <div className="absolute w-24 h-24 bg-white rounded-full flex flex-col items-center justify-center shadow-md border border-slate-50">
-                    <span className="text-[10px] text-slate-400 font-extrabold uppercase tracking-widest leading-none">Total N</span>
-                    <span className="text-xl font-bold font-mono text-slate-800 py-0.5">{totalValue}</span>
-                    <span className="text-[10px] text-indigo-500 font-mono font-bold">Responden</span>
-                  </div>
+                  {/* Central Text Hole with Dual State text */}
+                  {hoveredRowId !== null && hoveredRow ? (
+                    <div className="absolute w-28 h-28 bg-white rounded-full flex flex-col items-center justify-center p-2 text-center shadow-lg border border-slate-100 z-10 transition-all duration-250 transform scale-102">
+                      <span className="text-[10px] font-black text-indigo-700 uppercase tracking-widest max-w-[90px] truncate">
+                        {hoveredRow.label}
+                      </span>
+                      <span className="text-sm font-black font-mono text-slate-800 leading-none my-1">
+                        {hoveredRow.value} Siswa
+                      </span>
+                      <span className="text-[10px] bg-slate-900 text-white font-mono font-bold px-1.5 py-0.5 rounded shadow-sm">
+                        {totalValue > 0 ? ((hoveredRow.value / totalValue) * 100).toFixed(1) : '0'}%
+                      </span>
+                    </div>
+                  ) : (
+                    <div className="absolute w-28 h-28 bg-white rounded-full flex flex-col items-center justify-center text-center shadow-sm border border-slate-100">
+                      <span className="text-[9px] text-slate-400 font-extrabold uppercase tracking-widest leading-none">Total N</span>
+                      <span className="text-xl font-bold font-mono text-slate-800 py-0.5">{totalValue}</span>
+                      <span className="text-[9px] text-slate-500 font-mono font-bold">Responden</span>
+                    </div>
+                  )}
                 </div>
 
-                {/* Legend Checklist */}
-                <div className="flex flex-col space-y-2 text-xs text-slate-600 max-h-[190px] overflow-y-auto pr-2 w-full" id="pie-chart-legends-panel">
-                  <div className="text-[11px] font-bold text-slate-600 uppercase tracking-widest font-mono border-b border-slate-55 pb-1">
+                {/* Legend Checklist Panel */}
+                <div className="flex flex-col space-y-2 text-xs text-slate-600 max-h-[190px] overflow-y-auto pr-1 w-full" id="pie-chart-legends-panel">
+                  <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest font-mono border-b border-slate-100 pb-1 mb-1">
                     📌 LEGENDA PROPORSI
                   </div>
                   {rows.map((row, idx) => {
                     const percent = totalValue > 0 ? ((row.value / totalValue) * 100).toFixed(1) : '0';
-                    const color = colors[idx % colors.length];
+                    const palette = COLOR_PALETTES[idx % COLOR_PALETTES.length];
+                    const isHovered = hoveredRowId === row.id;
+                    const isOtherHovered = hoveredRowId !== null && hoveredRowId !== row.id;
+
                     return (
-                      <div key={row.id} className="flex items-center justify-between py-0.5 border-b border-slate-50" id={`pie-legend-${row.id}`}>
+                      <div
+                        key={row.id}
+                        className={`flex items-center justify-between py-1 px-2 border border-transparent rounded-lg transition-all duration-200 cursor-pointer ${
+                          isHovered
+                            ? 'bg-indigo-50/70 border-indigo-100 shadow-sm pl-3'
+                            : 'hover:bg-slate-50'
+                        } ${isOtherHovered ? 'opacity-40' : 'opacity-100'}`}
+                        onMouseEnter={() => setHoveredRowId(row.id)}
+                        onMouseLeave={() => setHoveredRowId(null)}
+                        id={`pie-legend-${row.id}`}
+                      >
                         <div className="flex items-center space-x-2 truncate">
-                          <div className="w-3.5 h-3.5 rounded-full shrink-0 shadow-sm border border-white" style={{ backgroundColor: color }}></div>
-                          <span className="font-bold text-slate-700 truncate">{row.label}</span>
+                          <div className="w-3 h-3 rounded-full shrink-0 shadow-sm border border-white" style={{ backgroundColor: palette.from }}></div>
+                          <span className={`font-bold truncate ${isHovered ? 'text-indigo-950 font-extrabold' : 'text-slate-700'}`}>{row.label}</span>
                         </div>
-                        <div className="flex items-center space-x-2 text-slate-500 shrink-0 select-none font-mono text-[11px]">
+                        <div className="flex items-center space-x-1.5 text-slate-505 shrink-0 select-none font-mono text-[11px]">
                           <span>{row.value} siswa</span>
-                          <span className="font-semibold text-slate-805 bg-slate-50 px-1 py-0.5 rounded text-indigo-700">({percent}%)</span>
+                          <span className={`font-bold px-1.5 py-0.5 rounded text-[11px] font-extrabold transition-colors duration-200 ${
+                            isHovered ? 'bg-indigo-150 text-indigo-805' : 'bg-slate-100 text-slate-700'
+                          }`}>({percent}%)</span>
                         </div>
                       </div>
                     );
@@ -557,10 +732,10 @@ export default function Eksplorasi() {
           {/* Interactive Lesson Tips */}
           <div className="p-3 bg-indigo-50/50 border border-indigo-100 rounded-xl" id="eksplorasi-lessons-tips">
             <h4 className="text-xs font-extrabold text-indigo-800 flex items-center space-x-1.5 mb-1">
-              <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+              <Sparkles className="w-3.5 h-3.5 text-indigo-600 animate-pulse" />
               <span>Petunjuk Guru Suwarto:</span>
             </h4>
-            <p className="text-[10px] text-indigo-700 leading-relaxed font-medium">
+            <p className="text-[10px] text-indigo-700 leading-relaxed font-semibold">
               Apakah kamu menyadari? Memilih diagram lingkar atau batang sangat tergantung pada jenis data penelitian. Diagram lingkaran merepresentasikan kontribusi (%) terhadap juring 360°, sedangkan diagram batang menggambarkan nilai absolut tinggi balok secara sejajar!
             </p>
           </div>
