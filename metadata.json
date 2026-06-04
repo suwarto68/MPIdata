@@ -1,0 +1,6 @@
+{
+  "name": "Media Pembelajaran Data dan Diagram",
+  "description": "Media pembelajaran matematika interaktif kelas 7 Fase D tentang Data dan Diagram, lengkap dengan kuis bergaya ANBK, materi interaktif, dan sertifikat.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
